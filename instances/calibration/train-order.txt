@@ -1,0 +1,23 @@
+# The 20 training instances, in the order irace presents them.
+# They are a subset of the 80 that calibration/run-generation.sh
+# produces; the 40 of test/ are the disjoint test set.
+100rnd01.dat
+90rnd03.dat
+100rnd07.dat
+90rnd10.dat
+80rnd07.dat
+70rnd01.dat
+100rnd03.dat
+90rnd07.dat
+60rnd10.dat
+10rnd01.dat
+100rnd10.dat
+90rnd01.dat
+50rnd03.dat
+20rnd02.dat
+80rnd10.dat
+70rnd03.dat
+30rnd04.dat
+60rnd07.dat
+50rnd01.dat
+40rnd05.dat

@@ -1,0 +1,9 @@
+# Every text file keeps LF endings, both in the repository and in the working
+# tree, on every platform. This matters here: the instances and the reference
+# solutions are compared byte for byte against freshly generated ones, as the
+# READMEs describe, and a checkout that turned them into CRLF would make every
+# one of those comparisons fail.
+* text=auto eol=lf
+
+# Figures are binary and are never converted.
+*.pdf binary

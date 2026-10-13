@@ -1,0 +1,18 @@
+# scratch space of the scripts
+work/
+out/
+/figures/
+
+# build products
+ils/ils-bcd
+*.mod
+*.o
+__pycache__/
+
+# run artifacts of the model
+model/write-solutions/
+model/plot-solutions/
+model/plot-solutions-metapost/
+model/tab-cplex-solutions.txt
+model/tab-instance-features.txt
+model/tour-xsol-cplex-solutions.txt
