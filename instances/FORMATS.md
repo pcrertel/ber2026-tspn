@@ -1,8 +1,7 @@
 # File formats
 
-All files are plain text. Numbers are written in free format, separated by
-blanks and newlines, so a reader may simply read tokens in order; the line
-breaks shown below are the ones the programs write, not part of the format.
+All files are plain text, with numbers in free format separated by blanks and
+newlines: a reader may simply read tokens in order.
 
 ## TSPN instance — `tspn/*/*.dat`, `sao-paulo/96sp4966.dat`
 
@@ -21,7 +20,7 @@ each neighborhood `k` in turn, its number of vertices `nv(k)` followed by that
 many coordinate pairs, the vertices in order along the boundary.
 
 A neighborhood with `nv(k) = 1` is a single point and one with `nv(k) = 2` is a
-segment. With `nv(k) >= 3` it is a simple polygon, non-convex in general, with
+segment. With `nv(k) >= 3` it is a simple polygon, in general non-convex, with
 at most three reflex vertices in the converted instances and between 16 and 29
 in the São Paulo one.
 
@@ -37,13 +36,10 @@ cost
 
 One line per stop, in the order of the tour: the index `k` of the neighborhood
 visited and the coordinates of the visit point inside it. The last line is the
-length of the closed tour that joins the `m` visit points in that order.
+length of the closed tour.
 
-The tour is written in a canonical form: it starts at neighborhood 1 and runs
-towards whichever neighbour of 1 has the smaller index. A closed tour can be
-read from any starting point and in either direction, and this form picks one
-representative of all of them, so two solution files are identical if and only
-if they describe the same cycle with the same visit points.
+The tour starts at neighborhood 1 and runs towards whichever neighbour of 1 has
+the smaller index, so the same cycle is always written the same way.
 
 ## Reference costs — `reference-gtsp-costs.dat`
 
@@ -53,34 +49,26 @@ if they describe the same cycle with the same visit points.
 
 One line per instance, with comment lines beginning with `#`. The second field
 is the length of the best known tour of the GTSP instance the TSPN instance was
-built from, which is a feasible TSPN tour because every point of a GTSP cluster
-belongs to the polygon built from it. The third is the length of that same
-visiting sequence after the visit points are recomputed with the BCD, which is
-the reference the paper calls GTSP + BCD.
+built from; the third is the length of that same visiting sequence after the
+visit points are recomputed with the BCD.
 
-`sao-paulo/reference-cost.dat` has the same shape for the São Paulo instance,
-where both fields are the length reported in the paper that introduced it.
+`sao-paulo/reference-cost.dat` has the same shape, with the length reported in
+the literature in both fields.
 
 ## GTSP instance — `gtsp/*/*.gtsp`
 
 The format of the GTSP Lib, derived from TSPLIB: a header of `KEY : value`
 lines, then `NODE_COORD_SECTION` with one `index x y` per line, then
 `GTSP_SET_SECTION` with one line per cluster: the index of the cluster, the
-indices of the points that belong to it, and `-1`. These files are
-redistributed unchanged; see `SOURCES.md`.
+indices of the points that belong to it, and `-1`.
 
-## Calibration instance — `calibration/*/*.dat`
+## Calibration instance — `calibration/{train,test}/*.dat`
 
-The same format as a TSPN instance. `seeds.csv` records, for each of them, the
-number of neighborhoods, the largest number of vertices, the side of the square
-domain, the seed it was drawn with, and the GTSP instance whose cluster sizes
-were borrowed. `train-order.txt` lists the 20 training instances in the order
-irace presents them.
+The same format as a TSPN instance.
 
 ## Model instance — `model/instances/*/*.dat`
 
 A declarative form of the same data, with each non-convex neighborhood already
-partitioned into convex polygons, which is what the MIQCP needs: the number of
-neighborhoods, the points of the GTSP clusters, and for each neighborhood the
-convex polygons of its partition with their vertices. Section 5.1 of the paper
-describes how such a partition is obtained.
+partitioned into convex polygons: the number of neighborhoods, the points of
+the GTSP clusters, and for each neighborhood the convex polygons of its
+partition with their vertices.

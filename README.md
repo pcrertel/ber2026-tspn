@@ -4,70 +4,44 @@ Instances, code and results of the paper
 
 > **The Traveling Salesman Problem with non-convex polygonal neighborhoods: A hybrid Iterated Local Search–Block Coordinate Descent approach**
 
-The paper studies the Traveling Salesman Problem with Neighborhoods (TSPN)
-where each neighborhood is a simple, possibly non-convex polygon. It proposes a
-block coordinate descent (BCD) method that computes the visit points of a fixed
-visiting sequence, embeds it in an iterated local search (ILS-BCD), and compares
-both against a mixed-integer quadratically constrained program solved with
-CPLEX.
-
-This repository holds the 235 TSPN instances used in the paper, the programs
-that build them from GTSP instances, the instances used to calibrate the
-parameters and the program that generates them, the ILS-BCD itself with a
-script that runs it on one instance, the MIQCP model, and the results.
-
-## What is here
+The problem asks for the shortest closed tour that visits a set of polygonal
+neighborhoods, each of them simple and possibly non-convex, at one point of
+each.
 
 | | |
 |---|---|
-| [`instances/`](instances/) | the TSPN instances, the GTSP instances they come from, the calibration sets, and the reference costs and solutions |
+| [`instances/`](instances/) | the 235 TSPN instances, the GTSP instances they come from, and the reference costs and solutions |
 | [`conversion/`](conversion/) | GTSP → TSPN, in three stages |
-| [`calibration/`](calibration/) | the generator of the calibration instances |
+| [`calibration/`](calibration/) | the calibration instances and the program that generates them |
 | [`ils/`](ils/) | the ILS-BCD, with `build.sh` and `run.sh` |
 | [`model/`](model/) | the MIQCP and the instances in the form it reads |
-| [`results/`](results/) | the best solution the ILS-BCD found on every instance, with a figure of each one and the raw per-run data |
+| [`results/`](results/) | the best solution found on every instance, with a figure of each one and the raw per-run data |
 
-## Quick start
+To run the ILS-BCD on one instance for 60 seconds:
 
-Run the ILS-BCD on one instance for 60 seconds:
+    ils/build.sh
+    ils/run.sh instances/tspn/momlib/10i60-21.dat 1 60
 
-```
-ils/build.sh
-ils/run.sh instances/tspn/momlib/10i60-21.dat 1 60
-```
-
-which prints the length of the tour found and its gaps to the two references,
-and writes the solution, the trajectory of the incumbent and a one-row summary
-to `out/10i60-21-seed1/`. [`ils/README.md`](ils/README.md) describes the
-parameters, the outputs and the stopping criteria.
-
-Rebuild the 235 instances from the GTSP sources:
-
-```
-conversion/run-conversion.sh --out /tmp/check
-diff -r instances/tspn /tmp/check/instances/tspn
-```
-
-The rebuilt instances are byte-for-byte identical to the ones shipped.
+[`instances/FORMATS.md`](instances/FORMATS.md) describes the file formats.
 
 ## Requirements
 
-`gfortran` for everything in `conversion/`, `calibration/` and `ils/`; nothing
-else. The experiments of the paper were run with gfortran 12.3.0 on Ubuntu
-23.04. `model/` additionally needs CPLEX with its Python API, and was run with
-IBM ILOG CPLEX Optimization Studio 22.1.2.
+`gfortran` for `conversion/`, `calibration/` and `ils/`. `model/` also needs
+CPLEX with its Python API. The experiments were run with gfortran 12.3.0 and
+CPLEX 22.1.2.
 
-## Formats
+## Instance references
 
-[`instances/FORMATS.md`](instances/FORMATS.md) describes the instance files,
-the solution files and the file of reference costs. The solutions that `run.sh`
-writes are in the same format as the reference solutions, so the two can be
-compared directly.
+[1] GTSP Lib — M. Fischetti, J. J. S. González and P. Toth, *A Branch-and-Cut
+Algorithm for the Symmetric Generalized Traveling Salesman Problem*, Operations
+Research 45(3):378–394, 1997.
 
-## Credits
+[2] MOM Lib — M. Mestria, L. Satoru Ochi and S. de Lima Martins, *GRASP with
+path relinking for the symmetric Euclidean clustered traveling salesman
+problem*, Computers & Operations Research 40(12):3218–3229, 2013.
+DOI 10.1016/j.cor.2012.10.001
 
-The instances of the GTSP Lib and the MOM Lib redistributed here keep their own
-provenance, recorded in
-[`instances/gtsp/SOURCES.md`](instances/gtsp/SOURCES.md); the São Paulo
-instance is from another paper, credited in
-[`instances/sao-paulo/SOURCE.md`](instances/sao-paulo/SOURCE.md).
+[3] the São Paulo instance — E. G. Birgin and J. M. Martínez, *Block coordinate
+descent for smooth nonconvex constrained minimization*, Computational
+Optimization and Applications 83(1):1–27, 2022.
+DOI 10.1007/s10589-022-00389-5

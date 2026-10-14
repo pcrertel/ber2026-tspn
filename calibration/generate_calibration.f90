@@ -39,7 +39,7 @@ module calibration_generator
     ! PARAMETERS
     integer, parameter :: kinsert = 3    ! points reinserted per polygon
     integer, parameter :: ncand   = 10   ! candidates per centre (blue noise)
-    integer, parameter :: kviz    = 12   ! neighbours in the Voronoi test
+    integer, parameter :: kneigh    = 12   ! neighbours in the Voronoi test
     real(kind=8), parameter :: pi = acos( -1.0d0 )
 
     ! State of the random number generator
@@ -93,7 +93,7 @@ contains
 
     end function randint
 
-    subroutine dist_linha(x1,y1,x2,y2,px,py,dist)
+    subroutine dist_line(x1,y1,x2,y2,px,py,dist)
 
         ! Distance from a point to the LINE through (x1,y1) and (x2,y2).
         ! Equivalent to line_exp_point_dist_2d of stage 3: the projection is
@@ -121,9 +121,9 @@ contains
 
         return
 
-    end subroutine dist_linha
+    end subroutine dist_line
 
-    subroutine ordena_chave(n,chave,ordem)
+    subroutine sort_key(n,key,order)
 
         ! STABLE insertion sort by increasing key.
         !
@@ -137,34 +137,34 @@ contains
 
         implicit none
         integer, intent(in)  :: n
-        real(kind=8), intent(in)  :: chave(n)
-        integer, intent(out) :: ordem(n)
+        real(kind=8), intent(in)  :: key(n)
+        integer, intent(out) :: order(n)
 
         integer :: i,j,tmp
 
         do i = 1,n
-            ordem(i) = i
+            order(i) = i
         end do
 
         do i = 2,n
-            tmp = ordem(i)
+            tmp = order(i)
             j = i - 1
             do while ( j .ge. 1 )
-                if ( chave(ordem(j)) .gt. chave(tmp) ) then
-                    ordem(j+1) = ordem(j)
+                if ( key(order(j)) .gt. key(tmp) ) then
+                    order(j+1) = order(j)
                     j = j - 1
                 else
                     exit
                 end if
             end do
-            ordem(j+1) = tmp
+            order(j+1) = tmp
         end do
 
         return
 
-    end subroutine ordena_chave
+    end subroutine sort_key
 
-    subroutine ordena_xy(n,x,y,ordem)
+    subroutine sort_xy(n,x,y,order)
 
         ! STABLE insertion sort by increasing (x,y) -- the presort of the
         ! monotone chain algorithm.
@@ -172,36 +172,36 @@ contains
         implicit none
         integer, intent(in)  :: n
         real(kind=8), intent(in)  :: x(n),y(n)
-        integer, intent(out) :: ordem(n)
+        integer, intent(out) :: order(n)
 
         integer :: i,j,tmp
-        logical :: maior
+        logical :: greater
 
         do i = 1,n
-            ordem(i) = i
+            order(i) = i
         end do
 
         do i = 2,n
-            tmp = ordem(i)
+            tmp = order(i)
             j = i - 1
             do while ( j .ge. 1 )
-                maior = ( x(ordem(j)) .gt. x(tmp) ) .or. &
-                        ( x(ordem(j)) .eq. x(tmp) .and. y(ordem(j)) .gt. y(tmp) )
-                if ( maior ) then
-                    ordem(j+1) = ordem(j)
+                greater = ( x(order(j)) .gt. x(tmp) ) .or. &
+                        ( x(order(j)) .eq. x(tmp) .and. y(order(j)) .gt. y(tmp) )
+                if ( greater ) then
+                    order(j+1) = order(j)
                     j = j - 1
                 else
                     exit
                 end if
             end do
-            ordem(j+1) = tmp
+            order(j+1) = tmp
         end do
 
         return
 
-    end subroutine ordena_xy
+    end subroutine sort_xy
 
-    subroutine fecho_convexo(m,x,y,nh,hind)
+    subroutine convex_hull(m,x,y,nh,hind)
 
         ! Convex hull by Andrew's monotone chain algorithm.  Returns the
         ! indices of the hull vertices in INCREASING order.  Because the
@@ -219,7 +219,7 @@ contains
         integer :: ord(m),lo(m+1),up(m+1),nlo,nup,i,p,tmp,a,b
         real(kind=8) :: cr
 
-        call ordena_xy(m,x,y,ord)
+        call sort_xy(m,x,y,ord)
 
         nlo = 0
         do i = 1,m
@@ -280,19 +280,19 @@ contains
 
         return
 
-    end subroutine fecho_convexo
+    end subroutine convex_hull
 
-    subroutine reinsere(m,x,y,nh,hind,kins)
+    subroutine reinsert(m,x,y,nh,hind,nreins)
 
-        ! Reinsertion of up to kins points, replaying stage 3: each step
+        ! Reinsertion of up to nreins points, replaying stage 3: each step
         ! takes the longest ELIGIBLE edge -- one that skips at least one
         ! original index -- and inserts into it, between its two endpoints,
         ! the discarded point closest to the supporting line.  Every
         ! insertion creates one reflex vertex, which is why no polygon ends
-        ! up with more than kins of them.
+        ! up with more than nreins of them.
 
         implicit none
-        integer, intent(in)    :: m,kins
+        integer, intent(in)    :: m,nreins
         real(kind=8), intent(in)    :: x(m),y(m)
         integer, intent(inout) :: nh
         integer, intent(inout) :: hind(m)
@@ -302,7 +302,7 @@ contains
         real(kind=8) :: bestleng,leng,bestdist,dist
         logical :: inhull
 
-        k = min( kins, m - nh )
+        k = min( nreins, m - nh )
         if ( nh .le. 2 .or. k .lt. 1 ) return
 
         do it = 1,k
@@ -368,7 +368,7 @@ contains
                     end if
                 end do
                 if ( inhull ) cycle
-                call dist_linha( x(a),y(a),x(b),y(b),x(j),y(j),dist )
+                call dist_line( x(a),y(a),x(b),y(b),x(j),y(j),dist )
                 if ( dist .lt. bestdist ) then
                     bestdist = dist
                     jbest = j
@@ -387,7 +387,7 @@ contains
 
         return
 
-    end subroutine reinsere
+    end subroutine reinsert
 
 end module calibration_generator
 
@@ -411,13 +411,13 @@ program generate_calibration
                                                60, 70, 80, 90, 100 /)
     integer, parameter :: quantos(nalvos) = (/  5,  5,  5,  5, 10, &
                                                10, 10, 10, 10,  10 /)
-    integer, parameter :: escalas10(10) = (/ 200, 200, 2000, 2000, 2000, &
+    integer, parameter :: scales10(10) = (/ 200, 200, 2000, 2000, 2000, &
                                              2000, 20000, 20000, 20000, 200000 /)
-    integer, parameter :: escalas5(5)   = (/ 200, 2000, 2000, 20000, 200000 /)
+    integer, parameter :: scales5(5)   = (/ 200, 2000, 2000, 20000, 200000 /)
     ! Used only for a set generated with an explicit number of instances per
     ! npol: one domain scale per order of magnitude, so that every value of
     ! npol covers the whole range whatever the number of instances.
-    integer, parameter :: escalas4(4)   = (/ 200, 2000, 20000, 200000 /)
+    integer, parameter :: scales4(4)   = (/ 200, 2000, 20000, 200000 /)
     real(kind=8), parameter :: jitter = 0.10d0
     integer(kind=8), parameter :: seedinit = 1234567_8
     integer, parameter :: maxperf = 500, maxnpol = 200
@@ -434,12 +434,12 @@ program generate_calibration
     character(len=16) :: tag = 'rnd'           ! infix of the file names
 
     ! LOCAL SCALARS AND ARRAYS
-    integer :: nperf,i,j,ia,idx,np,ndoa,esc,d,jf,rf,tmp,nvmaxi,allocerr,mmax,np2
+    integer :: nperf,i,j,ia,idx,np,ndonor,domscale,d,jf,rf,tmp,nvmaxi,allocerr,mmax,np2
     integer :: lo,hi,lenb,base(maxnpol),nargs,nthis
-    integer(kind=8) :: sem
+    integer(kind=8) :: seed
     integer :: perfnp(maxperf),perftam(maxperf,maxnpol)
-    integer :: idoa(maxperf)
-    integer :: tam(maxnpol),nvp(maxnpol)
+    integer :: idonor(maxperf)
+    integer :: csize(maxnpol),nvp(maxnpol)
     character(len=80) :: perfnome(maxperf),nomearq
     character(len=8000) :: linha
     real(kind=8), allocatable :: vcoor(:,:,:)
@@ -517,11 +517,11 @@ program generate_calibration
         lo = ( 8*np ) / 10
         hi = ( 13*np ) / 10
 
-        ndoa = 0
+        ndonor = 0
         do i = 1,nperf
             if ( perfnp(i) .ge. lo .and. perfnp(i) .le. hi ) then
-                ndoa = ndoa + 1
-                idoa(ndoa) = i
+                ndonor = ndonor + 1
+                idonor(ndonor) = i
             end if
         end do
 
@@ -534,19 +534,19 @@ program generate_calibration
         do idx = 1,nthis
 
             ! deterministic seed: every instance is reproducible on its own
-            sem = mod( seedroot + 7919_8*int(np,8) + 104729_8*int(idx,8), 2147483647_8 )
-            if ( sem .le. 0_8 ) sem = sem + 2147483646_8
-            rngix = dble( sem )
+            seed = mod( seedroot + 7919_8*int(np,8) + 104729_8*int(idx,8), 2147483647_8 )
+            if ( seed .le. 0_8 ) seed = seed + 2147483646_8
+            rngix = dble( seed )
 
             if ( nper .gt. 0 ) then
-                esc = escalas4( mod( idx-1, 4 ) + 1 )
+                domscale = scales4( mod( idx-1, 4 ) + 1 )
             else if ( quantos(ia) .eq. 5 ) then
-                esc = escalas5( mod( idx-1, 5 ) + 1 )
+                domscale = scales5( mod( idx-1, 5 ) + 1 )
             else
-                esc = escalas10( mod( idx-1, 10 ) + 1 )
+                domscale = scales10( mod( idx-1, 10 ) + 1 )
             end if
 
-            d = idoa( randint(ndoa) + 1 )
+            d = idonor( randint(ndonor) + 1 )
 
             ! shuffle the donor's cluster sizes (Fisher-Yates, same RNG)
             lenb = perfnp(d)
@@ -561,11 +561,11 @@ program generate_calibration
             ! fit the length to the target npol: truncate if the donor has
             ! too many clusters, cycle through it if it has too few
             do j = 1,np
-                tam(j) = base( mod( j-1, lenb ) + 1 )
+                csize(j) = base( mod( j-1, lenb ) + 1 )
             end do
 
 
-            call gera_instancia(np,tam,dble(esc),jitter,mmax,nvp,vcoor,nvmaxi)
+            call generate_instance(np,csize,dble(domscale),jitter,mmax,nvp,vcoor,nvmaxi)
 
             write(nomearq,'(I0,A,I2.2,A)') np,trim(adjustl(tag)),idx,'.dat'
             open(unit=1050,file=trim(adjustl(outdir))//'/'//trim(adjustl(nomearq)),err=910)
@@ -579,7 +579,7 @@ program generate_calibration
             close(1050)
 
             write(*,'(A,A,A,I4,A,I3,A,I7,A,I11)') '  ',trim(adjustl(nomearq)), &
-            '  npol=',np,'  nvmax=',nvmaxi,'  domain=',esc,'  seed=',sem
+            '  npol=',np,'  nvmax=',nvmaxi,'  domain=',domscale,'  seed=',seed
 
         end do
     end do
@@ -599,18 +599,18 @@ program generate_calibration
 
 contains
 
-    subroutine gera_instancia(npol,tam,dom,jit,mmax,nvp,vcoor,nvmaxi)
+    subroutine generate_instance(npol,csize,domside,jitfrac,mmax,nvp,vcoor,nvmaxi)
 
         implicit none
 
         integer, intent(in)  :: npol,mmax
-        integer, intent(in)  :: tam(npol)
-        real(kind=8), intent(in)  :: dom,jit
+        integer, intent(in)  :: csize(npol)
+        real(kind=8), intent(in)  :: domside,jitfrac
         integer, intent(out) :: nvp(npol),nvmaxi
         real(kind=8), intent(out) :: vcoor(2,mmax+kinsert,npol)
 
-        integer :: i,j,c,t,a,b,ell,m,mm,nh,tent,maxtent,kk
-        integer :: viz(kviz,npol),idd(npol),ordem(mmax),hind(mmax)
+        integer :: i,j,c,t,a,b,ell,m,mm,nh,attempt,maxattempt,kk
+        integer :: neigh(kneigh,npol),idd(npol),order(mmax),hind(mmax)
         real(kind=8) :: cx(npol),cy(npol),nn(npol),rlim(npol),dd(npol)
         real(kind=8) :: px(mmax),py(mmax),xx(mmax),yy(mmax),ang(mmax)
         real(kind=8) :: bd,bx,by,pxc,pyc,dmin,ddq,rr,th,ax,ay,di,jr,jt
@@ -621,8 +621,8 @@ contains
         do i = 1,npol
             bd = -1.0d0; bx = 0.0d0; by = 0.0d0
             do c = 1,ncand
-                pxc = dom * drand(rngix)
-                pyc = dom * drand(rngix)
+                pxc = domside * drand(rngix)
+                pyc = domside * drand(rngix)
                 dmin = huge( 1.0d0 )
                 do j = 1,i-1
                     ddq = ( pxc-cx(j) )**2 + ( pyc-cy(j) )**2
@@ -637,7 +637,7 @@ contains
         end do
 
         ! 2) nearest neighbours (restricted Voronoi test) and cut-off radius
-        kk = min( kviz, npol-1 )
+        kk = min( kneigh, npol-1 )
         do i = 1,npol
             t = 0
             do j = 1,npol
@@ -655,7 +655,7 @@ contains
                 ell = idd(a); idd(a) = idd(b); idd(b) = ell
             end do
             do a = 1,kk
-                viz(a,i) = idd(a)
+                neigh(a,i) = idd(a)
             end do
             nn(i)   = dd(1)
             rlim(i) = max( 0.6d0*dd(kk), dd(1) )
@@ -665,32 +665,32 @@ contains
 
         do i = 1,npol
 
-            m = tam(i)
+            m = csize(i)
 
             ! 3) points uniform in the Voronoi cell of the centre, clipped
             !    to the domain; the final jitter lets a point cross the cell
             !    boundary, reproducing the slight overlap between
             !    neighbourhoods measured on the converted instances.
             mm = 0
-            tent = 0
-            maxtent = 400*m + 2000
+            attempt = 0
+            maxattempt = 400*m + 2000
 
-            do while ( mm .lt. m .and. tent .lt. maxtent )
+            do while ( mm .lt. m .and. attempt .lt. maxattempt )
 
-                tent = tent + 1
+                attempt = attempt + 1
 
                 rr = rlim(i) * sqrt( drand(rngix) )
                 th = 2.0d0 * pi * drand(rngix)
                 ax = cx(i) + rr * cos( th )
                 ay = cy(i) + rr * sin( th )
 
-                if ( ax .lt. 0.0d0 .or. ax .gt. dom .or. &
-                     ay .lt. 0.0d0 .or. ay .gt. dom ) cycle
+                if ( ax .lt. 0.0d0 .or. ax .gt. domside .or. &
+                     ay .lt. 0.0d0 .or. ay .gt. domside ) cycle
 
                 di = ( ax-cx(i) )**2 + ( ay-cy(i) )**2
                 ok = .true.
                 do t = 1,kk
-                    j = viz(t,i)
+                    j = neigh(t,i)
                     if ( ( ( ax-cx(j) )**2 + ( ay-cy(j) )**2 ) .lt. di ) then
                         ok = .false.
                         exit
@@ -698,7 +698,7 @@ contains
                 end do
                 if ( .not.ok ) cycle
 
-                jr = jit * nn(i) * sqrt( drand(rngix) )
+                jr = jitfrac * nn(i) * sqrt( drand(rngix) )
                 jt = 2.0d0 * pi * drand(rngix)
                 xi = dble( floor( ax + jr*cos(jt) + 0.5d0 ) )
                 yi = dble( floor( ay + jr*sin(jt) + 0.5d0 ) )
@@ -741,14 +741,14 @@ contains
                 do j = 1,mm
                     ang(j) = atan2( py(j)-gy, px(j)-gx )
                 end do
-                call ordena_chave(mm,ang(1:mm),ordem(1:mm))
+                call sort_key(mm,ang(1:mm),order(1:mm))
                 do j = 1,mm
-                    xx(j) = px(ordem(j))
-                    yy(j) = py(ordem(j))
+                    xx(j) = px(order(j))
+                    yy(j) = py(order(j))
                 end do
 
                 ! 5) convex hull + reinsertion
-                call fecho_convexo(mm,xx(1:mm),yy(1:mm),nh,hind(1:mm))
+                call convex_hull(mm,xx(1:mm),yy(1:mm),nh,hind(1:mm))
 
                 if ( nh .le. 2 ) then
                     nvp(i) = 2
@@ -757,7 +757,7 @@ contains
                     vcoor(1,2,i) = xx(hind(nh))
                     vcoor(2,2,i) = yy(hind(nh))
                 else
-                    call reinsere(mm,xx(1:mm),yy(1:mm),nh,hind(1:mm),kinsert)
+                    call reinsert(mm,xx(1:mm),yy(1:mm),nh,hind(1:mm),kinsert)
                     nvp(i) = nh
                     do j = 1,nh
                         vcoor(1,j,i) = xx(hind(j))
@@ -773,6 +773,6 @@ contains
 
         return
 
-    end subroutine gera_instancia
+    end subroutine generate_instance
 
 end program generate_calibration

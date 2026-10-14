@@ -2,31 +2,28 @@
 
 The best solution the ILS-BCD found on each of the 235 TSPN instances of this
 repository, and on the instance of the city of São Paulo. Every instance was
-solved in **ten independent runs** with different random seeds, each with a
-**CPU time limit of 1,200 seconds**, using the parameter configuration
-calibrated with irace that [`ils/README.md`](../ils/README.md) lists. A run
-also ends after 3,000 consecutive iterations without improving its incumbent.
+solved in ten independent runs with different random seeds, each with a CPU
+time limit of 1,200 seconds and the configuration listed in
+[`ils/README.md`](../ils/README.md). A run also ends after 3,000 consecutive
+iterations without improving its incumbent.
 
-The raw data behind every number here is under [`data/`](data/): one row per
-run in `sweep_summary.csv` and one row per instance in `aggregate_gtsp.csv`
-and `aggregate_mom.csv`.
+The per-run data is under [`data/`](data/).
 
 | Column | Meaning |
 |---|---|
 | `m` | number of polygonal neighborhoods |
-| `GTSP tour length` | length of the best known tour of the GTSP instance the TSPN instance was built from. Every point of a GTSP cluster belongs to the polygon built from it, so that tour is also a feasible TSPN tour, which is what makes it a reference. |
+| `GTSP tour length` | length of the best known tour of the GTSP instance the TSPN instance was built from |
 | `Best tour length` | the shortest tour found across the ten runs |
 | `Gap (%)` | 100 x (best - GTSP) / GTSP; negative means shorter than the GTSP tour |
 | `Figure` | the best solution drawn: the tour in red, the visit points as red dots, the neighborhoods in grey |
 | `Mean CPU time (s)` | mean total CPU time of the ten runs; a run stopped by the limit counts as 1,200 s |
 
 The instances are ordered by the number of neighborhoods and, within each
-value, by name; the 45 adapted from the GTSP Lib and the 190 adapted from the
-MOM Lib appear together, as in the paper.
+value, by name, with the GTSP Lib and the MOM Lib ones together.
 
-In six instances all the neighborhoods share a common point. The ILS-BCD finds
-the tour of length zero there, and the gap is -100% by the definition above;
-those six are left out of the average gap of the last row.
+In six instances all the neighborhoods share a common point, so the shortest
+tour has length zero and the gap is -100%. Those six are left out of the
+average gap of the last row.
 
 | Instance | *m* | GTSP tour length | Best tour length | Gap (%) | Figure | Mean CPU time (s) |
 |---|---:|---:|---:|---:|:---:|---:|
@@ -267,13 +264,13 @@ those six are left out of the average gap of the last row.
 | `100vm1084` | 100 | 78,443.76 | 78,058.98 | -0.490 | [pdf](figures/sol-100vm1084-ils.pdf) | 1,200.00 |
 | **Average** | **29** | **152,345.66** | **152,232.20** | **-0.441** | | **213.77** |
 
-The instance of the 96 districts of the city of São Paulo, credited in
-[`instances/sao-paulo/SOURCE.md`](../instances/sao-paulo/SOURCE.md), is of a
-different nature and gets its own line. It does not come from a GTSP instance,
-so the reference of its gap is the tour length reported in the paper that
-introduced it. The ten runs start from the initial solution given by the
-constructive heuristic of that same paper, so that what is compared is the two
-searches and not two starting points.
+## São Paulo
+
+The instance of the 96 districts of the city of São Paulo, from
+[\[3\]](../README.md#instance-references). The ten runs start from the initial
+solution of the constructive heuristic of that paper, and the gap is measured
+against the tour length reported there, since this instance does not come from
+a GTSP instance.
 
 | Instance | *m* | Reported tour length | Best tour length | Gap (%) | Figure | Mean CPU time (s) |
 |---|---:|---:|---:|---:|:---:|---:|
