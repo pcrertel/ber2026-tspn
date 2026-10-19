@@ -1,11 +1,13 @@
 # Results of the ILS-BCD
 
-The best solution the ILS-BCD found on each of the 235 TSPN instances of this
+The best solution the ILS-BCD found on each of the 295 TSPN instances of this
 repository, and on the instance of the city of São Paulo. Every instance was
-solved in ten independent runs with different random seeds, each with a CPU
-time limit of 1,200 seconds and the configuration listed in
-[`ils/README.md`](../ils/README.md). A run also ends after 3,000 consecutive
-iterations without improving its incumbent.
+solved in ten independent runs with different random seeds, with the
+configuration listed in [`ils/README.md`](../ils/README.md). A run ends at its
+CPU time limit or after 3,000 consecutive iterations without improving its
+incumbent. The limit is 1,200 seconds for the 235 instances with at most 100
+neighborhoods, which the table below reports, and 3,600 seconds for the 60
+larger ones, reported in their own section.
 
 The per-run data is under [`data/`](data/).
 
@@ -277,3 +279,80 @@ a GTSP instance.
 | `96sp4966` | 96 | 212,292.01 | 199,362.73 | -6.090 | [pdf](figures/sol-96sp4966-ils.pdf) | 1,200.00 |
 
 All ten runs reached the time limit. Eight returned a tour between 199,362.73 and 199,362.78, and the other two 199,390.36 and 199,637.10.
+
+## Instances with more than 100 neighborhoods
+
+The 60 instances with between 115 and 6,325 neighborhoods, each solved in ten
+runs with a CPU time limit of 3,600 seconds. The columns are those of the table
+above; a run stopped by the limit counts as 3,600 s in the mean CPU time. The
+per-run data is in [`data/sweep_summary_large.csv`](data/sweep_summary_large.csv).
+
+The ILS-BCD returns a shorter tour than the GTSP one on 28 of the 60. The gap
+turns positive beyond about 220 neighborhoods and grows from there.
+
+Figures are given up to 220 neighborhoods. Above that size the drawing is a
+dense mass of polygons and shows nothing useful.
+
+| Instance | *m* | GTSP tour length | Best tour length | Gap (%) | Figure | Mean CPU time (s) |
+|---|---:|---:|---:|---:|:---:|---:|
+| `115rat575` | 115 | 2,395.85 | 2,388.82 | -0.293 | [pdf](figures/sol-115rat575-ils.pdf) | 3,596.90 |
+| `115u574` | 115 | 16,687.37 | 16,603.23 | -0.504 | [pdf](figures/sol-115u574-ils.pdf) | 3,492.84 |
+| `131p654` | 131 | 27,434.58 | 27,415.32 | -0.070 | [pdf](figures/sol-131p654-ils.pdf) | 1,463.10 |
+| `132d657` | 132 | 22,495.51 | 22,435.10 | -0.269 | [pdf](figures/sol-132d657-ils.pdf) | 3,600.00 |
+| `144pcb1173-12x12` | 144 | 16,414.55 | 16,375.20 | -0.240 | [pdf](figures/sol-144pcb1173-12x12-ils.pdf) | 3,600.00 |
+| `144rat783-12x12` | 144 | 2,824.15 | 2,801.90 | -0.788 | [pdf](figures/sol-144rat783-12x12-ils.pdf) | 3,600.00 |
+| `145u724` | 145 | 17,264.24 | 17,223.18 | -0.238 | [pdf](figures/sol-145u724-ils.pdf) | 3,600.00 |
+| `150i1000-411` | 150 | 6,304.26 | 6,094.99 | -3.319 | [pdf](figures/sol-150i1000-411-ils.pdf) | 3,539.94 |
+| `150i1500-507` | 150 | 6,092.00 | 6,011.86 | -1.315 | [pdf](figures/sol-150i1500-507-ils.pdf) | 3,579.05 |
+| `150i2000-605` | 150 | 5,955.01 | 5,908.67 | -0.778 | [pdf](figures/sol-150i2000-605-ils.pdf) | 3,600.00 |
+| `150i2500-709` | 150 | 6,178.22 | 6,145.61 | -0.528 | [pdf](figures/sol-150i2500-709-ils.pdf) | 3,574.90 |
+| `150i3000-804` | 150 | 6,573.91 | 6,533.05 | -0.621 | [pdf](figures/sol-150i3000-804-ils.pdf) | 3,580.39 |
+| `150nrw1379` | 150 | 13,377.30 | 13,347.60 | -0.222 | [pdf](figures/sol-150nrw1379-ils.pdf) | 3,600.00 |
+| `150pcb1173` | 150 | 17,086.53 | 17,040.54 | -0.269 | [pdf](figures/sol-150pcb1173-ils.pdf) | 3,600.00 |
+| `150pr1002` | 150 | 92,967.16 | 92,760.02 | -0.223 | [pdf](figures/sol-150pr1002-ils.pdf) | 3,600.00 |
+| `150rat783` | 150 | 3,142.29 | 3,127.19 | -0.481 | [pdf](figures/sol-150rat783-ils.pdf) | 3,600.00 |
+| `150vm1084` | 150 | 95,924.17 | 95,608.96 | -0.329 | [pdf](figures/sol-150vm1084-ils.pdf) | 3,600.00 |
+| `157rat783` | 157 | 3,276.81 | 3,256.09 | -0.632 | [pdf](figures/sol-157rat783-ils.pdf) | 3,600.00 |
+| `200C1k.0` | 200 | 6,375,151.55 | 6,360,298.72 | -0.233 | [pdf](figures/sol-200C1k.0-ils.pdf) | 3,600.00 |
+| `200E1k.0` | 200 | 9,662,860.40 | 9,675,458.53 | 0.130 | [pdf](figures/sol-200E1k.0-ils.pdf) | 3,600.00 |
+| `200i2000-606` | 200 | 7,292.08 | 7,203.81 | -1.210 | [pdf](figures/sol-200i2000-606-ils.pdf) | 3,600.00 |
+| `200i2500-710` | 200 | 7,210.60 | 7,115.54 | -1.318 | [pdf](figures/sol-200i2500-710-ils.pdf) | 3,600.00 |
+| `200i3000-805` | 200 | 6,925.71 | 6,884.37 | -0.597 | [pdf](figures/sol-200i3000-805-ils.pdf) | 3,600.00 |
+| `201pr1002` | 201 | 114,316.23 | 114,038.57 | -0.243 | [pdf](figures/sol-201pr1002-ils.pdf) | 3,600.00 |
+| `212u1060` | 212 | 106,010.98 | 105,885.63 | -0.118 | [pdf](figures/sol-212u1060-ils.pdf) | 3,600.00 |
+| `217vm1084` | 217 | 130,704.21 | 130,398.08 | -0.234 | [pdf](figures/sol-217vm1084-ils.pdf) | 3,600.00 |
+| `235pcb1173` | 235 | 23,400.30 | 23,631.00 | 0.986 |  | 3,600.00 |
+| `259d1291` | 259 | 28,416.31 | 28,425.74 | 0.033 |  | 3,600.00 |
+| `261rl1304` | 261 | 150,464.16 | 150,626.30 | 0.108 |  | 3,600.00 |
+| `265rl1323` | 265 | 154,020.77 | 154,198.29 | 0.115 |  | 3,600.00 |
+| `276nrw1379` | 276 | 20,059.37 | 20,163.28 | 0.518 |  | 3,600.00 |
+| `280fl1400` | 280 | 15,328.14 | 15,301.38 | -0.175 |  | 3,600.00 |
+| `287u1432` | 287 | 54,483.50 | 54,671.59 | 0.345 |  | 3,600.00 |
+| `316C31k.0` | 316 | 10,098,861.51 | 10,156,018.87 | 0.566 |  | 3,600.00 |
+| `316fl1577` | 316 | 14,237.36 | 14,226.41 | -0.077 |  | 3,600.00 |
+| `331d1655` | 331 | 29,442.49 | 29,661.57 | 0.744 |  | 3,600.00 |
+| `350vm1748` | 350 | 185,454.12 | 186,217.02 | 0.411 |  | 3,600.00 |
+| `364u1817` | 364 | 25,561.14 | 25,550.48 | -0.042 |  | 3,600.00 |
+| `378rl1889` | 378 | 184,037.02 | 186,137.62 | 1.141 |  | 3,600.00 |
+| `421d2103` | 421 | 40,073.89 | 40,392.90 | 0.796 |  | 3,600.00 |
+| `431u2152` | 431 | 27,655.21 | 27,908.45 | 0.916 |  | 3,600.00 |
+| `464u2319` | 464 | 65,780.21 | 67,833.77 | 3.122 |  | 3,600.00 |
+| `479pr2392` | 479 | 169,886.33 | 173,484.38 | 2.118 |  | 3,600.00 |
+| `608pcb3038` | 608 | 52,437.35 | 54,895.09 | 4.687 |  | 3,600.00 |
+| `633C3k.0` | 633 | 10,255,046.16 | 10,416,214.19 | 1.572 |  | 3,600.00 |
+| `633E3k.0` | 633 | 16,197,553.92 | 16,974,428.47 | 4.796 |  | 3,600.00 |
+| `759fl3795` | 759 | 18,675.68 | 18,924.13 | 1.330 |  | 3,600.00 |
+| `893fnl4461` | 893 | 63,195.36 | 67,905.15 | 7.453 |  | 3,600.00 |
+| `1183rl5915` | 1183 | 309,246.13 | 326,174.84 | 5.474 |  | 3,600.00 |
+| `1187rl5934` | 1187 | 295,765.53 | 312,849.83 | 5.776 |  | 3,600.00 |
+| `2000C10k.0` | 2000 | 18,044,870.43 | 19,030,021.22 | 5.459 |  | 3,600.00 |
+| `2000E10k.0` | 2000 | 28,769,023.11 | 31,103,910.28 | 8.116 |  | 3,600.00 |
+| `2370rl11849` | 2370 | 428,014.21 | 467,658.09 | 9.262 |  | 3,600.00 |
+| `2702usa13509` | 2702 | 10,080,731.95 | 10,806,030.15 | 7.195 |  | 3,600.00 |
+| `2811brd14051` | 2811 | 176,773.39 | 196,358.08 | 11.079 |  | 3,600.00 |
+| `3023d15112` | 3023 | 628,323.03 | 693,494.92 | 10.372 |  | 3,600.00 |
+| `3703d18512` | 3703 | 235,062.11 | 267,013.52 | 13.593 |  | 3,600.00 |
+| `4996sw24978` | 4996 | 417,659.01 | 452,631.29 | 8.373 |  | 3,600.00 |
+| `6325C31k.0` | 6325 | 31,834,071.96 | 35,021,499.53 | 10.013 |  | 3,600.00 |
+| `6325E31k.0` | 6325 | 50,503,477.42 | 57,009,123.27 | 12.882 |  | 3,600.00 |
+| **Average** | **868** | **3,272,832.57** | **3,522,365.69** | **2.069** | | **3,560.45** |

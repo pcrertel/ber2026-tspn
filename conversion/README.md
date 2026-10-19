@@ -4,7 +4,7 @@ This folder contains the programs that build a TSPN instance from a GTSP
 instance, turning each cluster of points into a polygonal neighborhood that
 contains it.
 
-To build the 235 instances of `instances/tspn/`:
+To build the 295 instances of `instances/tspn/`:
 
     conversion/run-conversion.sh
 

@@ -10,12 +10,12 @@ each.
 
 | | |
 |---|---|
-| [`instances/`](instances/) | the 235 TSPN instances, the GTSP instances they come from, and the reference costs and solutions |
+| [`instances/`](instances/) | the 295 TSPN instances, the GTSP instances they come from, and the reference costs and solutions |
 | [`conversion/`](conversion/) | GTSP → TSPN, in three stages |
 | [`calibration/`](calibration/) | the calibration instances and the program that generates them |
 | [`ils/`](ils/) | the ILS-BCD, with `build.sh` and `run.sh` |
 | [`model/`](model/) | the MIQCP and the instances in the form it reads |
-| [`results/`](results/) | the best solution found on every instance, with a figure of each one and the raw per-run data |
+| [`results/`](results/) | the best solution found on every instance, with a figure of most of them and the raw per-run data |
 
 To run the ILS-BCD on one instance for 60 seconds:
 

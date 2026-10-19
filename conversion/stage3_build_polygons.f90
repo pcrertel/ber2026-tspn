@@ -720,6 +720,15 @@ program stage3_build_polygons
                         exit
                     end if
 
+                    ! The removal shortens the vertex list, so j may now be
+                    ! past its end. Jumping to 100 with such a j reads
+                    ! hull(:,j,i) outside the live part of the array, where the
+                    ! entries are zero, finds the triple collinear on every
+                    ! pass and reduces the polygon to two vertices.
+                    if ( j .gt. nvphull(i) ) then
+                        exit
+                    end if
+
                     go to 100
                 end if
             end do
